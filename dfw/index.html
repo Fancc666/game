@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="user-scalable=no">
+    <title>大富翁-FANCC</title>
+    <style>
+        :root{
+            font-size: 20px;
+        }
+        .container{
+            text-align: center;
+        }
+        .title{
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .body,.ts{
+            width: 80%;
+            border: 1px solid black;
+            padding: 1rem;
+            margin: 0 auto;
+        }
+        .choices{
+            font-size: 1.2rem;
+            border: 1px solid black;
+            padding: 5px;
+            width: 5rem;
+            margin: 1rem auto;
+            user-select: none;
+        }
+        .choices:hover{
+            background-color: lightcyan;
+        }
+        .describe{
+            font-size: .9rem;
+            color: grey;
+        }
+        #ts *{
+            word-break: break-all;
+        }
+        .foot{
+            width: 80%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<br />
+<div class="container">
+    <div class="head">
+        <p class="title">大富翁游戏</p>
+        <p style="width: 80%;margin: 0 auto;font-size: 1rem">游戏简介：你需要在25天内赚钱，越多越好，你拥有启动资金100元</p>
+        <p>今天是第<span id="dat">--</span>天</p>
+        <p>你的金钱：<span id="mon">--</span>元</p>
+        <p>行动点数：<span id="xd">--</span>次</p>
+    </div>
+    <div class="body">
+        <p class="choices" id="c1">去上班</p>
+        <p class="describe">最靠谱的挣钱方法，不过要经历实习期</p>
+        <p class="choices" id="c2">大转盘</p>
+        <p class="describe">好东西，试试看，每次10元</p>
+        <p class="choices" id="c3">买彩票</p>
+        <p class="describe">你确实有几率中奖，大小就说不定了，每次5元</p>
+        <p class="choices" id="c4">去赌博</p>
+        <p class="describe">想试试吗，但是我不建议尝试</p>
+        <p class="choices" id="c5">下一天</p>
+        <p class="describe">进入下一天，获取行动点数</p>
+        <div class="ts">
+            <p>提示框</p>
+            <div id="ts" style="max-height: 10.99rem;overflow: hidden">
+                <p>提示框里的内容提示你的操作</p>
+            </div>
+        </div>
+    </div>
+    <div class="foot">
+        <p>FCC:如果游戏有bug就赶快告诉我，感谢</p>
+        <p>BY FANCC</p>
+        <p>CREAT TIME:20210819</p>
+        <br />
+    </div>
+</div>
+<script>
+    /**
+     * GAME JS
+     */
+    let day=1;
+    let money=100;
+    let hd=2;
+    function load_inf() {
+        document.getElementById("dat").innerHTML=String(day);
+        document.getElementById("mon").innerHTML=String(money);
+        document.getElementById("xd").innerHTML=String(hd);
+    }
+    function oup(i) {
+        let ts_con=document.getElementById("ts");
+        let ts_p=document.createElement("p");
+        ts_p.innerText=i;
+        ts_con.prepend(ts_p);
+    }
+    load_inf();
+    oup("开发者：祝你玩得愉快");
+
+    /**
+     * GAME MAIN PART
+     */
+    //work
+    let workday=0;
+    document.getElementById("c1").addEventListener("click",function () {
+        if (hd>0) {
+            workday++;
+            hd--;
+             if (workday<10) {
+                 //shixi
+                 oup("你选择工作。你在实习期，赚到5元");
+                 money+=5;
+             }else {
+                 oup("你选择工作。你已经被正式录用，赚到15元");
+                 money+=15;
+             }
+        }else {
+            oup("你没有行动点数，请点击下一天")
+        }
+        load_inf();
+    });
+    //dazhuanpan
+    document.getElementById("c2").addEventListener("click",function () {
+        if (hd>0) {
+            if (money>=10) {
+                hd--;
+                money-=10;
+                if (Math.round(Math.random()*8) === 0) {
+                    //zhongjiang
+                    money+=35;
+                    oup("你中奖了，获得35元")
+                }else {
+                    oup("很可惜，你没中奖")
+                }
+            }else {
+                oup("你的钱不够")
+            }
+        }else {
+            oup("你没有行动点数，请点击下一天")
+        }
+        load_inf();
+    });
+    //caipiao
+    document.getElementById("c3").addEventListener("click",function () {
+        if (hd>0) {
+            if (money>=5) {
+                hd--;
+                money-=5;
+                if (Math.round(Math.random()*3) === 0) {
+                    //zhongjiang
+                    let z_m=Math.ceil(Math.random()*10);
+                    money+=z_m;
+                    oup("你中奖了，获得"+String(z_m)+"元")
+                }else {
+                    oup("很可惜，你没中奖")
+                }
+            }else {
+                oup("你的钱不够")
+            }
+        }else {
+            oup("你没有行动点数，请点击下一天")
+        }
+        load_inf();
+    });
+    //dubo
+    document.getElementById("c4").addEventListener("click",function () {
+        if (hd>0) {
+            let dzj=prompt("输入你的赌注金额");
+            const zz_num=/^\d+$/g;
+            if (zz_num.test(dzj)){
+                if (Number(dzj)>0) {
+                    let inp_num=Number(dzj);
+                    if (money>=inp_num) {
+                        hd--;
+                        if (inp_num<=50) {
+                            oup("你亏钱了");
+                            money-=inp_num;
+                        }else {
+                            if (Math.round(Math.random()) === 0) {
+                                money+=inp_num*5;
+                                oup("好家伙，你赚了")
+                            }else {
+                                oup("你亏钱了");
+                                money-=inp_num;
+                            }
+                        }
+                    }else {
+                        oup("你的钱不够")
+                    }
+                }else {
+                    oup("输入数字必去大于0");
+                }
+            } else {
+                oup("输入错误");
+            }
+        }else {
+            oup("你没有行动点数，请点击下一天")
+        }
+        load_inf();
+    });
+    //next day
+    document.getElementById("c5").addEventListener("click",function () {
+        if (day>=25) {
+            //jieshu
+            hd=0;
+            load_inf();
+            oup("游戏已结束，你一共赚到"+String(money-100)+"元，快去和朋友炫耀吧");
+        }else {
+            day++;
+            hd=2;
+            load_inf();
+            oup("你进入了第"+String(day)+"天");
+        }
+    });
+</script>
+<script>
+    /**
+     * NEW CSS CONTROL SYSTEM
+     */
+    /**
+     * @return {boolean}
+     */
+    function IsPC() {
+        const userAgentInfo = navigator.userAgent;
+        const Agents = ['Android', 'iPhone',
+            'SymbianOS', 'Windows Phone',
+            'iPad', 'iPod'
+        ];
+        let flag = true;
+        for (let i = 0; i < Agents.length; i++) {
+            if (userAgentInfo.indexOf(Agents[i]) !== -1) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+    if (IsPC()){
+        document.documentElement.style.fontSize="20px";
+    } else {
+        document.documentElement.style.fontSize="42px";
+    }
+</script>
+</body>
+</html>
